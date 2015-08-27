@@ -93,13 +93,11 @@ class PregnantWoman {
 	String name;
 	int dilation;
 	int tokenNo;
-	int qIndex;
 
 	PregnantWoman(String womanName, int womanDilation){
 		name = womanName;
 		dilation = womanDilation;
 		tokenNo = 0;
-		qIndex = 0;
 	}
 }
 
@@ -126,7 +124,7 @@ class BinaryHeap {
 	  int right(int i) { return (i << 1) + 1; } // shortcut for 2*i + 1
 	  
 	  void shiftUp(int i) {
-	    while (i > 1 && A.get(parent(i)).dilation < A.get(i).dilation) {
+	    while (i > 1 && A.get(parent(i)).dilation <= A.get(i).dilation) {
 	    	if((A.get(parent(i)).dilation == A.get(i).dilation) && (A.get(parent(i)).tokenNo < A.get(i).tokenNo)){
 	    		break;
 	    	}
@@ -219,11 +217,10 @@ class BinaryHeap {
 
 	  void Update(PregnantWoman woman){
 	  	int index = findIndex(woman.name);
-	  	PregnantWoman tempWoman = new PregnantWoman("", 0);
+	  	PregnantWoman tempWoman;
 	  	if(index!=0){
-	  		tempWoman.name = woman.name;
-	  		tempWoman.dilation = woman.dilation + A.get(index).dilation;
-	  		A.set(index, tempWoman);
+	  		tempWoman = A.get(index);
+	  		tempWoman.dilation = tempWoman.dilation + woman.dilation;
 	  		shiftUp(index);
 	  		shiftDown(index);
 	  	}
@@ -234,8 +231,11 @@ class BinaryHeap {
 	  	if(index != 0){
 	  		A.set(index, A.get(BinaryHeapSize));
   			A.remove(BinaryHeapSize);
-  			shiftDown(index);
   			BinaryHeapSize--;
+  			if(index != BinaryHeapSize+1){
+  				shiftUp(index);
+  				shiftDown(index);
+  			}
 	  	}
 	  }
 
