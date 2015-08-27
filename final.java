@@ -92,11 +92,13 @@ class SchedulingDeliveries {
 class PregnantWoman {
 	String name;
 	int dilation;
+	int tokenNo;
 	int qIndex;
 
 	PregnantWoman(String womanName, int womanDilation){
 		name = womanName;
 		dilation = womanDilation;
+		tokenNo = 0;
 		qIndex = 0;
 	}
 }
@@ -104,11 +106,13 @@ class PregnantWoman {
 class BinaryHeap {
 	  private Vector<PregnantWoman> A;
 	  private int BinaryHeapSize;
+	  private int Tokens;
 
 	  BinaryHeap() {
 	    A = new Vector<PregnantWoman>();
 	    A.add(new PregnantWoman("", 0)); // dummy
 	    BinaryHeapSize = 0;
+	    Tokens = 0;
 	  }
 
 	  BinaryHeap(PregnantWoman[] array) {
@@ -123,6 +127,9 @@ class BinaryHeap {
 	  
 	  void shiftUp(int i) {
 	    while (i > 1 && A.get(parent(i)).dilation < A.get(i).dilation) {
+	    	if((A.get(parent(i)).dilation == A.get(i).dilation) && (A.get(parent(i)).tokenNo < A.get(i).tokenNo)){
+	    		break;
+	    	}
 			PregnantWoman temp = A.get(i);
 			A.set(i, A.get(parent(i)));
 			A.set(parent(i), temp);
@@ -132,7 +139,9 @@ class BinaryHeap {
 
 	  void Insert(PregnantWoman woman) {
 	    BinaryHeapSize++;
+	    Tokens++;
 
+	    woman.tokenNo = Tokens;
 	    if (BinaryHeapSize >= A.size())
 	      A.add(woman);
 	    else
@@ -144,15 +153,21 @@ class BinaryHeap {
 	    while (i <= BinaryHeapSize) {
 	      int maxV = A.get(i).dilation, max_id = i;
 	      if (left(i) <= BinaryHeapSize && maxV <= A.get(left(i)).dilation) { // compare value of this node with its left subtree, if possible
+	        if((maxV == A.get(left(i)).dilation) && (A.get(i).tokenNo < A.get(left(i)).tokenNo) ){
+	        	break;
+	        } else {
 	        	maxV = A.get(left(i)).dilation;
 	        	max_id = left(i);
 	        }	        
-	      
+	      }
 	      if (right(i) <= BinaryHeapSize && maxV <= A.get(right(i)).dilation) { // now compare with its right subtree, if possible
+	        if((maxV == A.get(right(i)).dilation) && (A.get(i).tokenNo < A.get(right(i)).tokenNo) ){
+	        	break;
+	        } else {
 		        maxV = A.get(right(i)).dilation;
 		        max_id = right(i);
 	        }
-	      
+	      }
 	  
 	      if (max_id != i) {
 	        PregnantWoman temp = A.get(i);
