@@ -113,10 +113,6 @@ class BinaryHeap {
 	    Tokens = 0;
 	  }
 
-	  BinaryHeap(PregnantWoman[] array) {
-	    BuildBinaryHeap(array);
-	  }
-
 	  int parent(int i) { return i >> 1; } // shortcut for i/2, round down
 	  
 	  int left(int i) { return i << 1; } // shortcut for 2*i
@@ -151,19 +147,15 @@ class BinaryHeap {
 	    while (i <= BinaryHeapSize) {
 	      int maxV = A.get(i).dilation, max_id = i;
 	      if (left(i) <= BinaryHeapSize && maxV <= A.get(left(i)).dilation) { // compare value of this node with its left subtree, if possible
-	        if((maxV == A.get(left(i)).dilation) && (A.get(i).tokenNo < A.get(left(i)).tokenNo) ){
-	        	break;
-	        } else {
+	        if(!((maxV == A.get(left(i)).dilation) && (A.get(i).tokenNo < A.get(left(i)).tokenNo))){
 	        	maxV = A.get(left(i)).dilation;
 	        	max_id = left(i);
-	        }	        
+	        }  
 	      }
 	      if (right(i) <= BinaryHeapSize && maxV <= A.get(right(i)).dilation) { // now compare with its right subtree, if possible
-	        if((maxV == A.get(right(i)).dilation) && (A.get(i).tokenNo < A.get(right(i)).tokenNo) ){
-	        	break;
-	        } else {
-		        maxV = A.get(right(i)).dilation;
-		        max_id = right(i);
+	        if(!((maxV == A.get(right(i)).dilation) && (A.get(i).tokenNo < A.get(right(i)).tokenNo))){
+	        	maxV = A.get(right(i)).dilation;
+		        max_id = right(i);		        
 	        }
 	      }
 	  
@@ -184,31 +176,6 @@ class BinaryHeap {
 	    BinaryHeapSize--; // virtual decrease
 	    shiftDown(1);
 	    return maxV;
-	  }
-	  
-	  void BuildBinaryHeapSlow(PregnantWoman[] array) { // the O(n log n) version, array is 0-based
-	    A = new Vector<PregnantWoman>();
-	    A.add(new PregnantWoman("", 0)); // dummy, this BinaryHeap is 1-based
-	    for (int i = 1; i <= array.length; i++)
-	      Insert(array[i - 1]);
-	  }
-	  
-	  void BuildBinaryHeap(PregnantWoman[] array) { // the O(n) version, array is 0-based
-	    BinaryHeapSize = array.length;
-	    A = new Vector<PregnantWoman>();
-	    A.add(new PregnantWoman("", 0)); // dummy, this BinaryHeap is 1-based
-	    for (int i = 1; i <= BinaryHeapSize; i++) // copy the content
-	      A.add(array[i - 1]);
-	    for (int i = parent(BinaryHeapSize); i >= 1; i--)
-	      shiftDown(i);
-	  }
-
-	  Vector<PregnantWoman> BinaryHeapSort(PregnantWoman[] array) {
-	    BuildBinaryHeap(array);
-	    int N = array.length;
-	    for (int i = 1; i <= N; i++)
-	      A.set(N - i + 1, ExtractMax());
-	    return A; // ignore the first index 0
 	  }
 
 	  int size() { return BinaryHeapSize; }
