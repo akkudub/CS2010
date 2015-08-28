@@ -25,8 +25,10 @@ class SchedulingDeliveries {
     // into your chosen data structure
     //
     // write your answer here
+    // System.out.println("Arrive1  " + womanName);
   	PregnantWoman newWoman = new PregnantWoman(womanName, dilation);
   	heapWoman.Insert(newWoman);
+  	// System.out.println("Arrive2  " + womanName);
   }
 
   void UpdateDilation(String womanName, int increaseDilation) {
@@ -35,6 +37,7 @@ class SchedulingDeliveries {
     // and modify your chosen data structure (if needed)
     //
     // write your answer here
+  	// System.out.println("Update");
   	PregnantWoman updateWoman = new PregnantWoman(womanName, increaseDilation);
   	heapWoman.Update(updateWoman);
   }
@@ -44,6 +47,7 @@ class SchedulingDeliveries {
     // remove her from your chosen data structure
     //
     // write your answer here
+  	// System.out.println("Bitrth");
   	heapWoman.Delete(womanName);
   }
 
@@ -55,11 +59,12 @@ class SchedulingDeliveries {
     // be taken care of, return a String "The delivery suite is empty"
     //
     // write your answer here
+    // System.out.println("query");
     String nameWoman = heapWoman.Query();
-    
     if(nameWoman != "")
     	ans = nameWoman;
 
+    // System.out.println(ans);
     return ans;
   }
 
@@ -93,22 +98,26 @@ class PregnantWoman {
 	String name;
 	int dilation;
 	int tokenNo;
+	int qIndex;
 
 	PregnantWoman(String womanName, int womanDilation){
 		name = womanName;
 		dilation = womanDilation;
 		tokenNo = 0;
+		qIndex = 0;
 	}
 }
 
 class BinaryHeap {
 	  private Vector<PregnantWoman> A;
+	  private HashMap<String, PregnantWoman> Hash;
 	  private int BinaryHeapSize;
 	  private int Tokens;
 
 	  BinaryHeap() {
 	    A = new Vector<PregnantWoman>();
 	    A.add(new PregnantWoman("", 0)); // dummy
+	  	Hash = new HashMap<String, PregnantWoman>();
 	    BinaryHeapSize = 0;
 	    Tokens = 0;
 	  }
@@ -120,49 +129,87 @@ class BinaryHeap {
 	  int right(int i) { return (i << 1) + 1; } // shortcut for 2*i + 1
 	  
 	  void shiftUp(int i) {
+	  	PregnantWoman temp1 = A.get(i);
+	  	temp1.qIndex = i; //if nothing shifted
+	  	PregnantWoman temp2;
 	    while (i > 1 && A.get(parent(i)).dilation <= A.get(i).dilation) {
-	    	if((A.get(parent(i)).dilation == A.get(i).dilation) && (A.get(parent(i)).tokenNo < A.get(i).tokenNo)){
+	    	// System.out.println("shiftingupppppp");
+	    	if(!((A.get(parent(i)).dilation == A.get(i).dilation) && (A.get(parent(i)).tokenNo < A.get(i).tokenNo))){
+	    		temp1 = A.get(i);
+	    		temp1.qIndex = parent(i);
+				temp2 = A.get(parent(i));
+				temp2.qIndex = i;
+				A.set(i, temp2);
+				A.set(parent(i), temp1);
+				i = parent(i);
+	    	}else{
 	    		break;
-	    	}
-			PregnantWoman temp = A.get(i);
-			A.set(i, A.get(parent(i)));
-			A.set(parent(i), temp);
-			i = parent(i);
+	    	}		
 	    }
 	  }
 
 	  void Insert(PregnantWoman woman) {
+	  	// System.out.println("entering insert");
 	    BinaryHeapSize++;
 	    Tokens++;
-
 	    woman.tokenNo = Tokens;
+
+	  	Hash.put(woman.name, woman);
 	    if (BinaryHeapSize >= A.size())
 	      A.add(woman);
 	    else
 	      A.set(BinaryHeapSize, woman);
+	   
 	    shiftUp(BinaryHeapSize);
 	  }
 
 	  void shiftDown(int i) {
+	  	PregnantWoman temp1 = A.get(i);
+	  	temp1.qIndex = i; //if nothing shifted
+	  	PregnantWoman temp2;
+
 	    while (i <= BinaryHeapSize) {
-	      int maxV = A.get(i).dilation, max_id = i;
+	      int maxV, maxV_left, maxV_right;
+	      maxV = maxV_left = maxV_right = A.get(i).dilation;
+
+	      int max_id = i, max_id_left = i, max_id_right = i;
+
 	      if (left(i) <= BinaryHeapSize && maxV <= A.get(left(i)).dilation) { // compare value of this node with its left subtree, if possible
 	        if(!((maxV == A.get(left(i)).dilation) && (A.get(i).tokenNo < A.get(left(i)).tokenNo))){
-	        	maxV = A.get(left(i)).dilation;
-	        	max_id = left(i);
+	        	maxV_left = A.get(left(i)).dilation;
+	        	max_id_left = left(i);
 	        }  
 	      }
 	      if (right(i) <= BinaryHeapSize && maxV <= A.get(right(i)).dilation) { // now compare with its right subtree, if possible
 	        if(!((maxV == A.get(right(i)).dilation) && (A.get(i).tokenNo < A.get(right(i)).tokenNo))){
-	        	maxV = A.get(right(i)).dilation;
-		        max_id = right(i);		        
+	        	maxV_right = A.get(right(i)).dilation;
+		        max_id_right = right(i);		        
 	        }
 	      }
-	  
+	  	  
+	      if(maxV_left == maxV_right){
+	      	if(A.get(max_id_left).tokenNo < A.get(max_id_right).tokenNo){
+	      		maxV = maxV_left;
+	      		max_id = max_id_left;
+	      	}else{
+	      		maxV = maxV_right;
+	      		max_id = max_id_right;
+	      	}
+	      }else if(maxV_left < maxV_right){
+	      	maxV = maxV_right;
+	      	max_id = max_id_right;
+	      }else if(maxV_left > maxV_right){
+	      	maxV = maxV_left;
+	      	max_id = max_id_left;
+	      }
+
 	      if (max_id != i) {
-	        PregnantWoman temp = A.get(i);
-	        A.set(i, A.get(max_id));
-	        A.set(max_id, temp);
+	        temp1 = A.get(i);
+	        temp1.qIndex = max_id;
+	        temp2 = A.get(max_id);
+	        temp2.qIndex = i;
+	        A.set(i, temp2);
+	        A.set(max_id, temp1);
 	        i = max_id;
 	      }
 	      else
@@ -182,31 +229,40 @@ class BinaryHeap {
 	  
 	  boolean isEmpty() { return BinaryHeapSize == 0; }
 
-	  void Update(PregnantWoman woman){
-	  	int index = findIndex(woman.name);
+	  void Update(PregnantWoman woman){	  	
+  	// System.out.println("Updateing   " + woman.name);
+	  	int index = smartFindIndex(woman.name);
 	  	PregnantWoman tempWoman;
 	  	if(index!=0){
 	  		tempWoman = A.get(index);
 	  		tempWoman.dilation = tempWoman.dilation + woman.dilation;
+
+	  	  	// System.out.println("up   " + woman.name);
 	  		shiftUp(index);
+	  	  	// System.out.println("down   " + woman.name);
 	  		shiftDown(index);
 	  	}
 	  }
 
 	  void Delete(String womanName){
-	  	int index = findIndex(womanName);
+	  	int index = smartFindIndex(womanName);
 	  	if(index != 0){
 	  		A.set(index, A.get(BinaryHeapSize));
   			A.remove(BinaryHeapSize);
+  			Hash.remove(womanName);
+
   			BinaryHeapSize--;
   			if(index != BinaryHeapSize+1){
   				shiftUp(index);
+  				// System.out.println("shifting upppp");
   				shiftDown(index);
+  				// System.out.println("shifting DWNN");
   			}
 	  	}
 	  }
 
 	  String Query(){
+	  	// System.out.println("entrt qry");
 	  	if(BinaryHeapSize > 0)
 	  		return A.get(1).name;
 	  	else
@@ -223,9 +279,9 @@ class BinaryHeap {
 	    return index;
 	}
 
-	/*for part C
+	//for part C
 	int smartFindIndex(String findName){
-	
+		int position = Hash.get(findName).qIndex;
+		return position;
 	}
-	*/
 }
