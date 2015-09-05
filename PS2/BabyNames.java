@@ -62,10 +62,11 @@ class BabyNames {
     // write your answer here
 
     // --------------------------------------------
-
-    for(Map.Entry<String,Integer> temp : Babies.entrySet()) {
+    
+    SortedMap<String, Integer> temp1 = Babies.subMap(START, true, END, false);
+    for(Map.Entry<String,Integer> temp2 : temp1.entrySet()) {
     	  //String babyName = temp.getKey();
-    	  Integer gender = temp.getValue();
+    	  Integer gender = temp2.getValue();
     	  if(genderPreference == 0 ||genderPreference == gender){
     		  ans++;
     	  }
