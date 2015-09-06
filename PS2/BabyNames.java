@@ -12,8 +12,8 @@ class BabyNames {
   // is accessible to all methods in this class
 
   // --------------------------------------------
-  TreeMap<String, Integer> Babies;
-
+  TreeSet<String> BoyBabies;
+  TreeSet<String> GirlBabies;
   // --------------------------------------------
 
   public BabyNames() {
@@ -23,7 +23,8 @@ class BabyNames {
 
     // --------------------------------------------
 
-	  Babies = new TreeMap<String, Integer>();
+	  BoyBabies = new TreeSet<String>();
+	  GirlBabies = new TreeSet<String>();
 
     // --------------------------------------------
   }
@@ -35,8 +36,10 @@ class BabyNames {
     // write your answer here
 
     // --------------------------------------------
-
-	  Babies.put(babyName, genderSuitability);
+	  if(genderSuitability == 1)
+      BoyBabies.add(babyName);
+    else
+      GirlBabies.add(babyName);
 
     // --------------------------------------------
   }
@@ -48,7 +51,8 @@ class BabyNames {
 
     // --------------------------------------------
 
-	  Babies.remove(babyName);
+	BoyBabies.remove(babyName);
+    GirlBabies.remove(babyName);
 
     // --------------------------------------------
   }
@@ -62,15 +66,18 @@ class BabyNames {
     // write your answer here
 
     // --------------------------------------------
+    TreeSet<String> tempBoys = new TreeSet<String>();
+    TreeSet<String> tempGirls = new TreeSet<String>();
+    if(genderPreference == 0){
+      tempBoys = (TreeSet<String>)BoyBabies.subSet(START, true, END, false);
+      tempGirls = (TreeSet<String>)GirlBabies.subSet(START, true, END, false);
+    }else if(genderPreference == 1){
+      tempBoys = (TreeSet<String>)BoyBabies.subSet(START, true, END, false);
+    }else if(genderPreference == 2){
+      tempGirls = (TreeSet<String>)GirlBabies.subSet(START, true, END, false);
+    }
     
-    SortedMap<String, Integer> temp1 = Babies.subMap(START, true, END, false);
-    for(Map.Entry<String,Integer> temp2 : temp1.entrySet()) {
-    	  //String babyName = temp.getKey();
-    	  Integer gender = temp2.getValue();
-    	  if(genderPreference == 0 ||genderPreference == gender){
-    		  ans++;
-    	  }
-    	}
+    ans = tempBoys.size() + tempGirls.size();
 
     // --------------------------------------------
 
