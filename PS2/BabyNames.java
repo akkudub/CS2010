@@ -115,11 +115,12 @@ class BabyNames {
 
 // Every vertex in this BST is a Java Class
 class BSTVertex {
-  BSTVertex(String v) { name = v; parent = left = right = null; height = 0; }
+  BSTVertex(String v) { name=v; parent=left=right=null; height=0; size=1;}
   // all these attributes remain public to slightly simplify the code
   public BSTVertex parent, left, right;
   public String name;
   public int height; // will be used in AVL lecture
+  public int size;
 }
 
 // This is just a sample implementation
@@ -166,6 +167,7 @@ class BST {
       }
     }
     T.height = Math.max(getHeight(T.left), getHeight(T.right)) + 1;
+    T.size = getSize(T.left) + getSize(T.right) + 1;
     return T;                                          // return the updated BST
   }
 
@@ -269,6 +271,8 @@ class BST {
       P.right = Q;
       Q.height = Math.max(getHeight(Q.left), getHeight(Q.right)) + 1;
       P.height = Math.max(getHeight(P.left), getHeight(Q)) + 1;
+      Q.size = getSize(Q.left) + getSize(Q.right) + 1;
+      P.size = getSize(P.left) + getSize(Q) + 1;
       return P;
   }
 
@@ -283,6 +287,8 @@ class BST {
       Q.left = P;
       P.height = Math.max(getHeight(P.left), getHeight(P.right)) + 1;
       Q.height = Math.max(getHeight(Q.right), getHeight(P)) + 1;
+      P.size = getSize(P.left) + getSize(P.right) + 1;
+      Q.size = getSize(Q.right) + getSize(P) + 1;
       return Q;
   }
 
@@ -291,14 +297,15 @@ class BST {
   }
 
   protected int getSize(BSTVertex T){
-    if(T == null)
-      return 0;
-    else return getSize(T.left) + getSize(T.right) +1;
+    return T == null ? 0 : T.size;
+    // if(T == null)
+    //   return 0;
+    // else return getSize(T.left) + getSize(T.right) +1;
   }
 
   protected int getRank(String S, BSTVertex T){
     if (T == null) return 0; 
-    int temp = S.compareTo(T.name); 
+    int temp = S.compareTo(T.name);
     if      (temp < 0) return getRank(S, T.left); 
     else if (temp > 0) return 1 + getSize(T.left) + getRank(S, T.right); 
     else              return getSize(T.left); 
@@ -322,7 +329,7 @@ class BST {
 
   public void insert(String v){
     root = insert(root, v);
-    printBST();
+    //printBST();
   }
 
   public void inorder() { 
