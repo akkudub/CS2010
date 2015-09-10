@@ -13,8 +13,9 @@ class BabyNames {
   // is accessible to all methods in this class
 
   // --------------------------------------------
-  BST BoyBabies;
-  BST GirlBabies;
+  private BST BoyBabies;
+  private BST GirlBabies;
+  private HashMap<String, Integer> Hash;
   // --------------------------------------------
 
   public BabyNames() {
@@ -26,6 +27,7 @@ class BabyNames {
 
 	  BoyBabies = new BST();
 	  GirlBabies = new BST();
+	  Hash = new HashMap<String, Integer>();
 
     // --------------------------------------------
   }
@@ -42,6 +44,8 @@ class BabyNames {
     else
       GirlBabies.insert(babyName);
 
+    Hash.put(babyName, genderSuitability);
+
     // --------------------------------------------
   }
 
@@ -51,9 +55,13 @@ class BabyNames {
     // write your answer here
 
     // --------------------------------------------
-
-	  // BoyBabies.remove(babyName);
-   //  GirlBabies.remove(babyName);
+    if(Hash.get(babyName) == 1){
+      BoyBabies.delete(babyName);
+      Hash.remove(babyName);
+    }else if(Hash.get(babyName) == 2){
+      GirlBabies.delete(babyName);
+      Hash.remove(babyName);
+    }
 
     // --------------------------------------------
   }
@@ -139,11 +147,11 @@ class BST {
   protected BSTVertex insert(BSTVertex T, String v) {
     if (T == null){
     	T = new BSTVertex(v);          // insertion point is found
-    	nodeList.add(T);
+    	//nodeList.add(T);
     	return T;
     }
 
-    if (T.name.compareTo(v) < 0) {                                      // search to the right
+    if (T.name.compareTo(v) < 0) {                                      // search to the righttttt
       T.right = insert(T.right, v);
       T.right.parent = T;
       if(getHeight(T.left) - getHeight(T.right) == -2){               //unnbalanced
@@ -210,7 +218,7 @@ class BST {
         cur = par;                                         // continue moving up
         par = cur.parent;
       }
-      return par == null ? "-1" : par.name;           // this is the successor of T
+      return par == null ? null : par.name;           // this is the successor of T
     }
   }
 
@@ -225,12 +233,12 @@ class BST {
         cur = par;                                         // continue moving up
         par = cur.parent;
       }
-      return par == null ? "-1" : par.name;           // this is the successor of T
+      return par == null ? null : par.name;           // this is the successor of T
     }
   }
 
   protected BSTVertex delete(BSTVertex T, String v) {
-    if (T == null)  return T;              // cannot find the item to be deleted
+    if (T == null)  return T;              // cannot find the item to be deleted'
 
     if (T.name.equals(v)) {                          // this is the node to be deleted
       if (T.left == null && T.right == null)                   // this is a leaf
@@ -257,6 +265,26 @@ class BST {
       T.right = delete(T.right, v);
     else                                                   // search to the left
       T.left = delete(T.left, v);
+
+    if(T!= null){
+      if(getHeight(T.left) - getHeight(T.right) == -2){               //unnbalanced
+        if(T.right.name.compareTo(v) < 0){
+          T = rotateLeft(T);
+        }else{
+          T.right = rotateRight(T.right);
+          T = rotateLeft(T);
+        }
+      }else if(getHeight(T.left) - getHeight(T.right) == 2){
+        if(T.left.name.compareTo(v)>0){
+          T = rotateRight(T);
+        }else{
+          T.left = rotateLeft(T.left);
+          T = rotateRight(T);
+        }
+      }
+      T.height = Math.max(getHeight(T.left), getHeight(T.right)) + 1;
+      T.size = getSize(T.left) + getSize(T.right) + 1;
+    }
     return T;                                          // return the updated BST
   }
   
@@ -343,12 +371,12 @@ class BST {
 
   public String successor(String v) { 
     BSTVertex vPos = search(root, v);
-    return vPos == null ? "-1" : successor(vPos);
+    return vPos == null ? null : successor(vPos);
   }
 
   public String predecessor(String v) { 
     BSTVertex vPos = search(root, v);
-    return vPos == null ? "-1" : predecessor(vPos);
+    return vPos == null ? null : predecessor(vPos);
   }
 
   public void delete(String v) { root = delete(root, v); }
