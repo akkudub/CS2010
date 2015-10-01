@@ -58,6 +58,14 @@ class HospitalTour {
     included[vertex] = false;
     boolean importance = false;
     List<Integer> neighbours = AdjList.get(vertex);
+    if (neighbours.size() > 1) {
+      List<Integer> reachable = BFS(neighbours.get(0));
+      for (int i = 1; i<neighbours.size(); i++) {
+        if (!reachable.contains(neighbours.get(i))) {
+          importance = true;
+        }
+      }
+    }
     // int startingVertex = getStartingVertex(vertex);
     // if (startingVertex != -1) {
     //   if(BFS(startingVertex) != V-1)
@@ -67,9 +75,10 @@ class HospitalTour {
     return importance;
   }
 
-  private int BFS(int vertex){
-    boolean[] visited = new boolean[V];
-    int connections = 0;
+  //return the list of vertexes reachable from the given vertex via BFS
+  private List<Integer> BFS(int vertex){
+    List<Integer> connections = new ArrayList<Integer>();
+
     return connections;
   }
 
