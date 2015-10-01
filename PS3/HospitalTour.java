@@ -13,8 +13,11 @@ class HospitalTour {
   private int[] RatingScore; // the weight of each vertex (rating score of each room)
 
   // if needed, declare a private data structure here that
-  // is accessible to all methods in this class
+  // is accessible to all methods in this class;
 
+  private boolean[] included;
+  private List<List<Integer>> AdjList;
+  
   public HospitalTour() {
     // Write necessary code during construction
     //
@@ -30,15 +33,12 @@ class HospitalTour {
     // or report -1 if that hospital has no important room
     //
     // write your answer here
+
+    //finding out which nodes are impt, cant use degree
+
     int degree;
     for (int i=0; i<V; i++) {
-      degree = 0;
-      for (int j=0; j<V; j++) {
-        if (AdjMatrix[i][j] > 0) {
-          degree++;
-        }
-      }
-      if (degree > 1) {
+      if (isImportant(i)) {
         if (ans >= 0) {
           if (RatingScore[i] < ans) {
             ans = RatingScore[i];
@@ -54,8 +54,49 @@ class HospitalTour {
 
   // You can add extra function if needed
   // --------------------------------------------
+  private boolean isImportant(int vertex){
+    included[vertex] = false;
+    boolean importance = false;
+    List<Integer> neighbours = AdjList.get(vertex);
+    // int startingVertex = getStartingVertex(vertex);
+    // if (startingVertex != -1) {
+    //   if(BFS(startingVertex) != V-1)
+    //     importance = true;
+    // }
+    included[vertex] = true;
+    return importance;
+  }
+
+  private int BFS(int vertex){
+    boolean[] visited = new boolean[V];
+    int connections = 0;
+    return connections;
+  }
 
 
+  private int getStartingVertex(int vertex){
+    if (vertex != 0) {
+      return 0;
+    }else{
+      if (V == 1) {
+        return -1;
+      }else return 1;
+    }
+  }
+
+  private List<List<Integer>> AdjListify(int[][] Matrix){
+    List<List<Integer>> finalList = new ArrayList<List<Integer>>();
+    for (int i=0; i<V; i++) {
+      List<Integer> temp = new ArrayList<Integer>();
+      for (int j=0; j<V; j++) {
+        if (Matrix[i][j] == 1) {
+          temp.add(j);
+        }
+      }
+      finalList.add(temp);
+    }
+    return finalList;
+  }
 
   // --------------------------------------------
 
@@ -85,7 +126,9 @@ class HospitalTour {
           AdjMatrix[i][j] = 1; // edge weight is always 1 (the weight is on vertices now)
         }
       }
-
+      included = new boolean[V];
+      Arrays.fill(included, true);
+      AdjList = AdjListify(AdjMatrix);
       pr.println(Query());
     }
     pr.close();
