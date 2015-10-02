@@ -59,38 +59,34 @@ class HospitalTour {
     boolean importance = false;
     List<Integer> neighbours = AdjList.get(vertex);
     if (neighbours.size() > 1) {
-      List<Integer> reachable = BFS(neighbours.get(0));
-      for (int i = 1; i<neighbours.size(); i++) {
-        if (!reachable.contains(neighbours.get(i))) {
-          importance = true;
-        }
+      if(BFS(neighbours.get(0)) != (V-1)){
+        importance = true;
       }
     }
-    // int startingVertex = getStartingVertex(vertex);
-    // if (startingVertex != -1) {
-    //   if(BFS(startingVertex) != V-1)
-    //     importance = true;
-    // }
     included[vertex] = true;
     return importance;
   }
 
   //return the list of vertexes reachable from the given vertex via BFS
-  private List<Integer> BFS(int vertex){
-    List<Integer> connections = new ArrayList<Integer>();
+  int BFS(int from){
+    boolean[] visited = new boolean[V];
+    int connections = 1;
+    LinkedList<Integer> tempQueue = new LinkedList<Integer>();
+    visited[from] = true;
+    tempQueue.addLast(from);
 
-    return connections;
-  }
-
-
-  private int getStartingVertex(int vertex){
-    if (vertex != 0) {
-      return 0;
-    }else{
-      if (V == 1) {
-        return -1;
-      }else return 1;
+    while(!tempQueue.isEmpty()){
+      int u = tempQueue.pop();
+      for (int i = 0; i<AdjList.get(u).size(); i++) {
+        int tempVertex = AdjList.get(u).get(i);
+        if (!visited[tempVertex] && included[tempVertex]) {
+          visited[tempVertex] = true;
+          tempQueue.addLast(tempVertex);
+          connections++;
+        }
+      }
     }
+    return connections;
   }
 
   private List<List<Integer>> AdjListify(int[][] Matrix){
