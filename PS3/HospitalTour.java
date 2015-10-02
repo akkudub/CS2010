@@ -89,6 +89,7 @@ class HospitalTour {
     return connections;
   }
 
+  //convert adjacency matrix to adj list
   private List<List<Integer>> AdjListify(int[][] Matrix){
     List<List<Integer>> finalList = new ArrayList<List<Integer>>();
     for (int i=0; i<V; i++) {
@@ -144,25 +145,4 @@ class HospitalTour {
     HospitalTour ps3 = new HospitalTour();
     ps3.run();
   }
-}
-
-
-
-class IntegerPair implements Comparable<IntegerPair> {
-  Integer _first, _second;
-
-  public IntegerPair(Integer f, Integer s) {
-    _first = f;
-    _second = s;
-  }
-
-  public int compareTo(IntegerPair o) {
-    if (!this.first().equals(o.first()))
-      return this.first() - o.first();
-    else
-      return this.second() - o.second();
-  }
-
-  Integer first() { return _first; }
-  Integer second() { return _second; }
 }
