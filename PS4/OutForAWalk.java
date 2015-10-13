@@ -16,16 +16,13 @@ class OutForAWalk {
   // --------------------------------------------
 
 
-
   // --------------------------------------------
 
   public OutForAWalk() {
     // Write necessary codes during construction;
     //
     // write your answer here
-
-
-
+	  
   }
 
   void PreProcess() {
@@ -37,13 +34,12 @@ class OutForAWalk {
 
   int Query(int source, int destination) {
     int ans = 0;
-
     // You have to report the weight of a corridor (an edge)
     // which has the highest effort rating in the easiest path from source to destination for Grace
     //
     // write your answer here
 
-
+    ans = doPrim(source, destination);
 
     return ans;
   }
@@ -51,7 +47,31 @@ class OutForAWalk {
   // You can add extra function if needed
   // --------------------------------------------
 
+  private int doPrim(int source, int destination){
+	 PriorityQueue<IntegerPair> primPQ = new PriorityQueue<IntegerPair>();
+	 PriorityQueue<Integer> weightPQ = new PriorityQueue<Integer>();
+	 boolean visited[] = new boolean[V];
 
+	 //processing src
+	 visited[source] = true;
+	 for(int i=0; i<AdjList.get(source).size(); i++){
+		 primPQ.offer(AdjList.get(source).get(i));
+	 }	 
+	 while(!primPQ.isEmpty()){
+		 IntegerPair top = primPQ.poll();
+		 if(!visited[top.first()]){
+			 visited[top.first()] = true;
+			 weightPQ.add(-1 * top.second());
+			 if(top.first() == destination){
+				 break;
+			 }
+			 for(int j=0; j<AdjList.get(top.first()).size();j++){
+				 primPQ.add(AdjList.get(top.first()).get(j));
+			 }
+		 }
+	 }
+	return -1 * weightPQ.peek();
+  }
 
   // --------------------------------------------
 
@@ -146,8 +166,8 @@ class IntegerPair implements Comparable < IntegerPair > {
   }
 
   public int compareTo(IntegerPair o) {
-    if (!this.first().equals(o.first()))
-      return this.first() - o.first();
+    if (!this.second().equals(o.second()))
+      return this.second() - o.second();
     else
       return this.second() - o.second();
   }
