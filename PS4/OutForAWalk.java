@@ -74,11 +74,19 @@ class OutForAWalk {
 					maxEdge = top.second();
 				}
 				maxEdgeList[source][top.first()] = maxEdge;
+				if (maxEdge >= 1000) {
+					for (int n = 0; n < V; n++) {
+						if (maxEdgeList[source][n] == 0) {
+							maxEdgeList[source][n] = maxEdge;
+						}
+					}
+					break;
+				}
 				if (top.first() == destination) {
 					break;
 				}
 				for (int j = 0; j < AdjList.get(top.first()).size(); j++) {
-					primPQ.add(AdjList.get(top.first()).get(j));
+					primPQ.offer(AdjList.get(top.first()).get(j));
 				}
 			}
 		}
