@@ -21,6 +21,8 @@ class OutForAWalk {
 	// --------------------------------------------
 
 	private int[][] maxEdgeList;
+	boolean[] visited;
+	private Vector<Vector<IntegerPair>> MST;
 
 	// --------------------------------------------
 
@@ -28,13 +30,23 @@ class OutForAWalk {
 		// Write necessary codes during construction;
 		//
 		// write your answer here
+		MST = new Vector<Vector<IntegerPair>>();
 	}
 
 	void PreProcess() {
 		// write your answer here
 		// you can leave this method blank if you do not need it
-
-		maxEdgeList = new int[10][V];
+		// what is life anymore
+		maxEdgeList = new int [10][V];
+		for (int i = 0; i < V; i++) {
+			MST.add(i, new Vector<IntegerPair>());
+		}
+		doPrim(0);
+		// System.out.println(MST);
+		for (int d = 0; (d < 10) && (d < V); d++) {
+			visited = new boolean[V];
+			DFS(d, d, 0);
+		}
 	}
 
 	int Query(int source, int destination) {
@@ -44,10 +56,6 @@ class OutForAWalk {
 		// to destination for Grace
 		//
 		// write your answer here
-
-		if (maxEdgeList[source][destination] == 0) {
-			doPrim(source, destination);
-		}
 		ans = maxEdgeList[source][destination];
 
 		return ans;
@@ -56,42 +64,51 @@ class OutForAWalk {
 	// You can add extra function if needed
 	// --------------------------------------------
 
-	private void doPrim(int source, int destination) {
-		PriorityQueue<IntegerPair> primPQ = new PriorityQueue<IntegerPair>();
-		int maxEdge = 0;
-		boolean visited[] = new boolean[V];
+	private void doPrim(int source) {
+		PriorityQueue<IntegerTriple> primPQ = new PriorityQueue<IntegerTriple>();
+		boolean MSTvisited[] = new boolean[V];		
+		Vector<IntegerPair> neighbours = AdjList.get(source);
 
-		// processing src
-		visited[source] = true;
-		for (int i = 0; i < AdjList.get(source).size(); i++) {
-			primPQ.offer(AdjList.get(source).get(i));
+		MSTvisited[source] = true;
+
+		for (int i = 0; i < neighbours.size(); i++) {
+			IntegerTriple tempVertex = new IntegerTriple(neighbours.get(i).second(), source, neighbours.get(i).first());
+			primPQ.offer(tempVertex);
 		}
+		// rest of the nodes
 		while (!primPQ.isEmpty()) {
-			IntegerPair top = primPQ.poll();
-			if (!visited[top.first()]) {
-				visited[top.first()] = true;
-				if (top.second() > maxEdge) {
-					maxEdge = top.second();
-				}
-				maxEdgeList[source][top.first()] = maxEdge;
-				if (maxEdge >= 1000) {
-					for (int n = 0; n < V; n++) {
-						if (maxEdgeList[source][n] == 0) {
-							maxEdgeList[source][n] = maxEdge;
-						}
+			IntegerTriple top = primPQ.poll();
+			if (!MSTvisited[top.third()]) {
+				MSTvisited[top.third()] = true;
+				neighbours = AdjList.get(top.third());
+				MST.get(top.third()).add(new IntegerPair(top.second(), top.first()));
+				MST.get(top.second()).add(new IntegerPair(top.third(), top.first()));
+				for (int j = 0; j < neighbours.size(); j++) {
+					IntegerTriple tempVertex = new IntegerTriple(neighbours.get(j).second(),top.third() , neighbours.get(j).first());
+					if (!MSTvisited[neighbours.get(j).first()]) {						
+						primPQ.offer(tempVertex);
 					}
-					break;
-				}
-				if (top.first() == destination) {
-					break;
-				}
-				for (int j = 0; j < AdjList.get(top.first()).size(); j++) {
-					primPQ.offer(AdjList.get(top.first()).get(j));
 				}
 			}
 		}
 	}
 
+	private void DFS(int source, int curr, int max) {
+		visited[curr] = true;
+		Vector<IntegerPair> nbrs = MST.get(curr);
+		for (int i = 0; i < nbrs.size(); i++) {
+			int to = MST.get(curr).get(i).first();
+			int weight = MST.get(curr).get(i).second();
+			if (!visited[to]) {
+				int tempMax = max;
+				if (weight > max) {
+					tempMax = weight;
+				}
+				maxEdgeList[source][to] = tempMax;
+				DFS(source, to, tempMax);
+			}
+		}
+	}
 	// --------------------------------------------
 
 	void run() throws Exception {
@@ -187,11 +204,15 @@ class IntegerPair implements Comparable<IntegerPair> {
 		_second = s;
 	}
 
+	public String toString() {
+		return _first.toString() + _second.toString();
+	}
+
 	public int compareTo(IntegerPair o) {
 		if (!this.second().equals(o.second()))
 			return this.second() - o.second();
 		else
-			return this.second() - o.second();
+			return this.first() - o.first();
 	}
 
 	Integer first() {
