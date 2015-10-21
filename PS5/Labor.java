@@ -24,7 +24,7 @@ class Labor {
 	// --------------------------------------------
 
 	private boolean[] visited;
-	private int distance;
+	private int[][] distanceList;
 
 	// --------------------------------------------
 
@@ -41,13 +41,17 @@ class Labor {
 		// write your answer here
 		// -------------------------------------------------------------------------
 		
-		
+		distanceList = new int[V][V];
+		for(int i=0; i<V; i++){
+			visited = new boolean[V];
+			DFS(i, i, 0);
+		}
 		
 		// -------------------------------------------------------------------------
 	}
 
 	int Query(int s, int t, int k) {
-		int ans = 0;
+		int ans = -1;
 
 		// You have to report the shortest path from Steven and Grace's current
 		// position s
@@ -58,12 +62,15 @@ class Labor {
 		// PS: this query means different thing for the Subtask D (R-option)
 		//
 		// write your answer here
-		visited = new boolean[V];
-		distance = 0;
-		if (DFS(s, t)) {
-			ans = distance;
+		if (s==t) {
+			ans = 0;
+		}else{
+			if (distanceList[s][t] == 0) {
+				ans = -1;
+			}else{
+				ans = distanceList[s][t];
+			}
 		}
-
 		// -------------------------------------------------------------------------
 
 		return ans;
@@ -72,28 +79,18 @@ class Labor {
 	// You can add extra function if needed
 	// --------------------------------------------
 
-	private boolean DFS(int source, int dest) {
-		visited[source] = true;
-		boolean foundHere = false;
-		Vector<IntegerPair> nbrs = AdjList.get(source);
-		for (int i = 0; i < nbrs.size(); i++) {
-			int to = nbrs.get(i).first();
-			int weight = nbrs.get(i).second();
+
+	private void DFS(int source, int curr, int distance) {
+		visited[curr] = true;
+		Vector<IntegerPair> neighbors = AdjList.get(curr);
+		for (int i = 0; i < neighbors.size(); i++) {
+			int to = neighbors.get(i).first();
+			int weight = neighbors.get(i).second();
 			if (!visited[to]) {
-				if (to == dest) {
-					foundHere = true;
-					distance += weight;
-					break;
-				} else {
-					foundHere = DFS(to, dest);
-					if (foundHere) {
-						distance += weight;
-						break;
-					}
-				}
+				distanceList[source][to] = distance+weight;
+				DFS(source, to, distance+weight);
 			}
 		}
-		return foundHere;
 	}
 
 	// --------------------------------------------
