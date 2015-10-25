@@ -24,7 +24,7 @@ class Labor {
 	// --------------------------------------------
 
 	private int[][] distanceList;
-	private static final int SLEEPINGEIGHT = 1000000000;
+	private static final int SLEEPYEIGHT = 1000000000;
 
 	// --------------------------------------------
 
@@ -41,17 +41,6 @@ class Labor {
 		// write your answer here
 		// -------------------------------------------------------------------------
 
-		distanceList = new int[V][V];
-		for (int x = 0; x < V; x++) {
-			int[] tempArray = new int[V];
-			Arrays.fill(tempArray, SLEEPINGEIGHT);
-			distanceList[x] = tempArray;
-		}
-
-		for (int i = 0; (i < V)&&(i < 10); i++) {
-			Dijkstra(i);
-		}
-
 		// -------------------------------------------------------------------------
 	}
 
@@ -67,15 +56,16 @@ class Labor {
 		// PS: this query means different thing for the Subtask D (R-option)
 		//
 		// write your answer here
-		if (s == t) {
-			ans = 0;
-		} else {
-			if (distanceList[s][t] == SLEEPINGEIGHT) {
-				ans = -1;
-			} else {
-				ans = distanceList[s][t];
-			}
+
+		distanceList = new int[V][V+1];
+		for (int x = 0; x < V; x++) {
+			int[] tempArray = new int[V+1];
+			Arrays.fill(tempArray, SLEEPYEIGHT);
+			distanceList[x] = tempArray;
 		}
+
+		ans = Dijkstra(s, t, k);
+		
 		// -------------------------------------------------------------------------
 
 		return ans;
@@ -84,25 +74,37 @@ class Labor {
 	// You can add extra function if needed
 	// --------------------------------------------
 
-	private void Dijkstra(int source) {
-		distanceList[source][source] = 0;
-		PriorityQueue<IntegerPair> DJQueue = new PriorityQueue<IntegerPair>();
-		DJQueue.add(new IntegerPair(distanceList[source][source], source));
+	private int Dijkstra(int source,int destination, int maxHops) {
+		int minDist = -1;
+		distanceList[source][1] = 0;
+
+		PriorityQueue<IntegerTriple> DJQueue = new PriorityQueue<IntegerTriple>();
+		DJQueue.add(new IntegerTriple(distanceList[source][1], 1, source));
+		
 		while (!DJQueue.isEmpty()) {
-			IntegerPair front = DJQueue.remove();
-			int d = front.first();
-			int u = front.second();
-			if (d == distanceList[source][u]) {
-				Vector<IntegerPair> neighbors = AdjList.get(u);
+			IntegerTriple front = DJQueue.remove();
+			int dist = front.first();
+			int hops = front.second();
+			int dest = front.third();
+			if (distanceList[dest][hops] == dist) {
+				if (dest == destination) {
+					return dist;
+				}else if(hops < maxHops){
+				Vector<IntegerPair> neighbors = AdjList.get(dest);
 				for (int i = 0; i < neighbors.size(); i++) {
 					IntegerPair v = neighbors.get(i);
-					if (distanceList[source][u] + v.second() < distanceList[source][v.first()]) {
-						distanceList[source][v.first()] = distanceList[source][u] + v.second();
-						DJQueue.add(new IntegerPair(distanceList[source][v.first()], v.first()));
+					int nbrDist = v.second();
+					int nbrHops = hops+1;
+					int nbrDest	= v.first();
+					if (dist + nbrDist < distanceList[nbrDest][nbrHops]) {
+						distanceList[nbrDest][nbrHops] = dist + nbrDist;
+						DJQueue.add(new IntegerTriple(distanceList[nbrDest][nbrHops], nbrHops, nbrDest));
+						}
 					}
 				}
 			}
 		}
+		return minDist;
 	}
 
 	// --------------------------------------------
@@ -212,5 +214,36 @@ class IntegerPair implements Comparable<IntegerPair> {
 
 	Integer second() {
 		return _second;
+	}
+}
+
+class IntegerTriple implements Comparable<IntegerTriple> {
+	Integer _first, _second, _third;
+
+	public IntegerTriple(Integer f, Integer s, Integer t) {
+		_first = f;
+		_second = s;
+		_third = t;
+	}
+
+	public int compareTo(IntegerTriple o) {
+		if (!this.first().equals(o.first()))
+			return this.first() - o.first();
+		else if (!this.second().equals(o.second()))
+			return this.second() - o.second();
+		else
+			return this.third() - o.third();
+	}
+
+	Integer first() {
+		return _first;
+	}
+
+	Integer second() {
+		return _second;
+	}
+
+	Integer third() {
+		return _third;
 	}
 }
